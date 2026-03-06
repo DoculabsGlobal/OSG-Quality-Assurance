@@ -3,11 +3,6 @@ import { REQUIRED_COLLECTIONS, SUGGESTED_COLLECTIONS } from '../../constants/con
 import { createClientFolders } from '../../services/collections';
 import { useCollections } from '../../context/CollectionContext';
 
-/**
- * New Client Setup modal.
- * Creates folder structure for a new client project.
- * Auto-includes SUGGESTED_COLLECTIONS (e.g. "Client Data") as removable defaults.
- */
 export default function SetupModal({ isOpen, onClose }) {
   const { loadCollections } = useCollections();
   const [clientName, setClientName] = useState('');
@@ -19,8 +14,7 @@ export default function SetupModal({ isOpen, onClose }) {
 
   const addCustomType = useCallback(() => {
     const val = customInput.trim();
-    if (!val) return;
-    if (dynamicTypes.includes(val)) return; // no duplicates
+    if (!val || dynamicTypes.includes(val)) return;
     setDynamicTypes(prev => [...prev, val]);
     setCustomInput('');
   }, [customInput, dynamicTypes]);
@@ -32,94 +26,97 @@ export default function SetupModal({ isOpen, onClose }) {
   const handleCreate = useCallback(async () => {
     if (!clientName.trim()) { setError('Client name required'); return; }
     if (!projectName.trim()) { setError('Project name required'); return; }
-
     setIsCreating(true);
     setError('');
-
     try {
-      const additionalTypes = dynamicTypes.filter(Boolean);
-      await createClientFolders(clientName.trim(), projectName.trim(), additionalTypes);
+      await createClientFolders(clientName.trim(), projectName.trim(), dynamicTypes.filter(Boolean));
       await loadCollections();
-      // Reset and close
-      setClientName('');
-      setProjectName('');
-      setDynamicTypes([...SUGGESTED_COLLECTIONS]);
+      setClientName(''); setProjectName(''); setDynamicTypes([...SUGGESTED_COLLECTIONS]);
       onClose();
-    } catch (e) {
-      setError(e.message);
-    }
+    } catch (e) { setError(e.message); }
     setIsCreating(false);
   }, [clientName, projectName, dynamicTypes, loadCollections, onClose]);
 
   if (!isOpen) return null;
 
+  const inputStyle = {
+    width: '100%', padding: '7px 10px', border: '1px solid var(--border)',
+    borderRadius: 6, fontFamily: 'inherit', fontSize: 13,
+    background: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box',
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" style={{ width: 480, maxHeight: '85vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
-        <h2>New Client Setup</h2>
-        <p>Create folder structure for a new client</p>
+      <div className="modal" style={{ width: 440, padding: '18px 22px' }} onClick={(e) => e.stopPropagation()}>
+        <h2 style={{ fontSize: 18, marginBottom: 2 }}>New Client Setup</h2>
+        <p style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 12 }}>Create folder structure for a new client</p>
 
-        <label className="input-label">Client Name</label>
-        <input type="text" value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="e.g. BNY Mellon" />
-
-        <label className="input-label">Project Name</label>
-        <input type="text" value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder="e.g. Mortgage Servicing Transfer" />
-
-        {/* Dynamic reference folders — fixed height, scrollable */}
-        <label className="input-label" style={{ marginBottom: 2 }}>Reference Folders</label>
-        <div style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 8 }}>
-          Source materials — upload client data, fee schedules, templates, and disclosures here
+        {/* Two-column: Client + Project */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
+          <div>
+            <label className="input-label" style={{ fontSize: 11, marginBottom: 2 }}>Client Name</label>
+            <input style={inputStyle} value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="e.g. BNY Mellon" />
+          </div>
+          <div>
+            <label className="input-label" style={{ fontSize: 11, marginBottom: 2 }}>Project Name</label>
+            <input style={inputStyle} value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder="e.g. Mortgage Transfer" />
+          </div>
         </div>
-        <div style={{ maxHeight: 140, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
+
+        {/* Reference folders — inline chips */}
+        <label className="input-label" style={{ fontSize: 11, marginBottom: 3 }}>Reference Folders</label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
           {dynamicTypes.map((t, i) => (
-            <div key={i} className="type-check checked" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', fontSize: 13, flexShrink: 0 }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2">
-                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-              </svg>
-              <span style={{ flex: 1 }}>{t}</span>
-              <button className="lib-action-btn" onClick={() => removeType(i)} style={{ color: 'var(--fail)' }}>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-            </div>
+            <span key={i} style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              padding: '3px 8px', borderRadius: 4, fontSize: 11,
+              background: 'var(--accent-soft)', border: '1px solid var(--border)',
+            }}>
+              {t}
+              <button onClick={() => removeType(i)} style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: 'var(--text-3)', fontSize: 13, lineHeight: 1, padding: 0,
+              }}>×</button>
+            </span>
           ))}
         </div>
-        <div style={{ display: 'flex', gap: 6, marginTop: 8, marginBottom: 16 }}>
+        <div style={{ display: 'flex', gap: 4, marginBottom: 12 }}>
           <input
-            type="text"
+            style={{ ...inputStyle, flex: 1, fontSize: 12, padding: '5px 8px' }}
             value={customInput}
             onChange={(e) => setCustomInput(e.target.value)}
             placeholder="Add folder..."
-            style={{ flex: 1, padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6, fontFamily: 'inherit', fontSize: 14, background: 'var(--bg)', color: 'var(--text)' }}
             onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCustomType(); } }}
           />
-          <button className="btn btn-secondary" onClick={addCustomType} style={{ padding: '8px 14px' }}>+ Add</button>
+          <button className="btn btn-secondary" onClick={addCustomType} style={{ padding: '4px 10px', fontSize: 11 }}>+ Add</button>
         </div>
 
-        {/* Output folders (read-only) */}
-        <label className="input-label" style={{ marginBottom: 2 }}>Output Folders</label>
-        <div style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 8 }}>
-          System-managed — where QA results, test plans, and reports are written
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 12 }}>
+        {/* Output folders — compact inline list */}
+        <label className="input-label" style={{ fontSize: 11, marginBottom: 3 }}>Output Folders <span style={{ fontWeight: 400, color: 'var(--text-3)' }}>— system managed</span></label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 14 }}>
           {REQUIRED_COLLECTIONS.map(req => (
-            <div key={req.key} className="type-check checked" style={{ opacity: 0.55, cursor: 'default', padding: '6px 12px', fontSize: 13 }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2">
+            <span key={req.key} style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              padding: '3px 8px', borderRadius: 4, fontSize: 11,
+              background: 'var(--bg)', border: '1px solid var(--border-soft)',
+              color: 'var(--text-3)',
+            }}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
               </svg>
               {req.label}
-            </div>
+            </span>
           ))}
         </div>
 
-        <div className="modal-actions">
-          <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
-          <button className="btn btn-primary" onClick={handleCreate} disabled={isCreating}>
+        {/* Actions */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+          <button className="btn btn-secondary" onClick={onClose} style={{ padding: '7px 16px', fontSize: 13 }}>Cancel</button>
+          <button className="btn btn-primary" onClick={handleCreate} disabled={isCreating} style={{ padding: '7px 16px', fontSize: 13 }}>
             {isCreating ? 'Creating...' : 'Create Folders'}
           </button>
         </div>
-        {error && <div className="error">{error}</div>}
+        {error && <div className="error" style={{ marginTop: 6, fontSize: 12 }}>{error}</div>}
       </div>
     </div>
   );
