@@ -169,21 +169,21 @@ export default function ValidateAuditTab() {
           </>
         )}
 
-        {/* PROCESSING STATE (chunking + agent launch) */}
-        {viewState === 'processing' && (
+        {/* PROCESSING STATE — chunking only (before agents launch) */}
+        {viewState === 'processing' && batch.state !== 'tracking' && (
           <BatchProcessingView
             chunkingPercent={batch.chunkingPercent}
             chunkingStatus={batch.chunkingStatus}
             chunkingContext={batch.chunkingContext}
             batches={batch.batches}
             batchStatuses={batch.batchStatuses}
-            showBatchList={batch.state === 'launching' || batch.state === 'tracking'}
+            showBatchList={batch.state === 'launching'}
             onCancel={handleCancelChunking}
           />
         )}
 
-        {/* AUDIT LIVE STATE (execution tracking) */}
-        {(viewState === 'processing' && batch.state === 'tracking') || viewState === 'audit-live' ? (
+        {/* AUDIT LIVE STATE — agents tracking (replaces chunking view) */}
+        {viewState === 'processing' && batch.state === 'tracking' && (
           <AuditLiveView
             liveText={batch.liveText}
             subtext={batch.subtext}
@@ -192,8 +192,10 @@ export default function ValidateAuditTab() {
             currentStep={batch.currentStep}
             showRetry={batch.showRetry}
             onRetry={handleRetry}
+            batches={batch.batches}
+            batchStatuses={batch.batchStatuses}
           />
-        ) : null}
+        )}
 
       </div>
     </div>
