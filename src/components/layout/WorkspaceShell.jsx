@@ -45,24 +45,10 @@ export default function WorkspaceShell() {
             />
           </div>
 
-          <div className="workspace-content">
-            {activeTab === 'sampling' && (
-              <div className="card-stack">
-                <SamplingTab />
-              </div>
-            )}
-
-            {activeTab === 'checklist' && (
-              <div className="card-stack">
-                <TestPlanTab onApprove={handleApprove} />
-              </div>
-            )}
-
-            {activeTab === 'validation' && (
-              <div className="card-stack">
-                <ValidateAuditTab />
-              </div>
-            )}
+          <div className="workspace-cards">
+            {activeTab === 'sampling' && <SamplingTab />}
+            {activeTab === 'checklist' && <TestPlanTab onApprove={handleApprove} />}
+            {activeTab === 'validation' && <ValidateAuditTab />}
           </div>
         </div>
       </div>
