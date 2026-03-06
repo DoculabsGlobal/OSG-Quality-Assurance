@@ -9,7 +9,7 @@ export const API_KEY = import.meta.env.VITE_API_KEY || '';
 export const VALID_CODES = (import.meta.env.VITE_VALID_CODES || '').split(',').filter(Boolean);
 
 export const AGENTS = {
-  CHECKLIST_GENERATION: '	Agent1DigitalAndPhysicalTestPlan',
+  CHECKLIST_GENERATION: 'Agent1DigitalAndPhysicalTestPlan',
   CHECKLIST_VALIDATION: 'Agent3QAChecklistValidation',
   SAMPLING: 'OSGStatisticalSignificanceCalculator',
   AUDIT: 'AuditAgent',
