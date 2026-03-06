@@ -42,6 +42,7 @@ export default function ValidateAuditTab() {
   // Batch processing hook with completion callback
   const batch = useBatchProcessing({
     jwt,
+    allCollections,
     onComplete: async () => {
       setViewState('audit');
       setSourceMode('previous');
