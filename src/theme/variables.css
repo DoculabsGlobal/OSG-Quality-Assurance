@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #f5f1ea;
+  --surface: #fdfaf4;
+  --surface-hover: #faf7f0;
+  --surface-active: #f5f0e7;
+  --text: #3d3830;
+  --text-2: #6a6259;
+  --text-3: #a09686;
+  --border: #e5ddd0;
+  --border-soft: #ede6db;
+  --pass: #5a8a6a;
+  --pass-soft: #f0f5ef;
+  --fail: #c4785c;
+  --fail-soft: #faf2ed;
+  --gap: #9a9488;
+  --gap-soft: #f4f2ed;
+  --accent: #5a7a8a;
+  --accent-soft: #eef2f4;
+  --accent-deep: #4a6a7a;
+  --warning: #b8943d;
+  --warning-soft: #fdf8ec;
+  --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  --grain-opacity: 0.025;
+  --surface-glow: linear-gradient(165deg, rgba(253,250,244,0.6) 0%, rgba(245,241,234,0.3) 100%);
+  --card-shadow: 0 1px 2px rgba(60, 50, 40, 0.03), 0 4px 12px rgba(60, 50, 40, 0.04);
+  --card-shadow-hover: 0 2px 4px rgba(60, 50, 40, 0.04), 0 8px 24px rgba(60, 50, 40, 0.06);
+  --sidebar-w: 380px;
+}
+
+[data-mode="moonlit"] {
+  --bg: #1a1d24;
+  --surface: #232730;
+  --surface-hover: #2a2e38;
+  --surface-active: #323844;
+  --text: #d4d7e0;
+  --text-2: #9ba1b0;
+  --text-3: #6b7280;
+  --border: #363b47;
+  --border-soft: #2d313b;
+  --pass: #6aab8c;
+  --pass-soft: rgba(106, 171, 140, 0.12);
+  --fail: #d4856f;
+  --fail-soft: rgba(212, 133, 111, 0.12);
+  --gap: #8890a0;
+  --gap-soft: rgba(136, 144, 160, 0.12);
+  --accent: #7a9aaa;
+  --accent-soft: rgba(122, 154, 170, 0.12);
+  --accent-deep: #8aaabb;
+  --warning: #d4b85c;
+  --warning-soft: rgba(212, 184, 92, 0.12);
+  --grain-opacity: 0.018;
+  --surface-glow: linear-gradient(165deg, rgba(45,50,60,0.4) 0%, rgba(26,29,36,0.2) 100%);
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.15);
+  --card-shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.15), 0 8px 24px rgba(0, 0, 0, 0.2);
+}
