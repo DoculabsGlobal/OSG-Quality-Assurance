@@ -7,7 +7,7 @@ export const CHUNKER_URL = 'https://osgpdfchunkerpoc-production.up.railway.app';
 // ===== Auth =====
 // Note: API_KEY is hardcoded for demo. In production, accept via login form or env var.
 export const API_KEY = 'sk-25bf067b64952c430f0b786b52bf89f8';
-export const VALID_CODES = ['DemoUser1234', 'DemoUser5678', 'DemoUser9012', 'DemoUser3456'];
+export const VALID_CODES = ['OSGQA2026!', 'OSGQA2026@', 'OSGQA2026#', 'OSGQA2026$', 'OSGQA2026%'];
 
 // ===== Agents =====
 export const AGENTS = {
