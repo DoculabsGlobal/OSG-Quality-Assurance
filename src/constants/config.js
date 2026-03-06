@@ -8,10 +8,9 @@ export const CHUNKER_URL = import.meta.env.VITE_CHUNKER_URL || 'https://osgpdfch
 export const API_KEY = import.meta.env.VITE_API_KEY || '';
 export const VALID_CODES = (import.meta.env.VITE_VALID_CODES || '').split(',').filter(Boolean);
 
-// ===== Agents =====
 export const AGENTS = {
-  CHECKLIST_GENERATION: 'Agent1QATestPlanCreationFork',
-  CHECKLIST_VALIDATION: 'QAChecklistValidation',
+  CHECKLIST_GENERATION: 'Agent1QATestPlanCreation',
+  CHECKLIST_VALIDATION: 'Agent3QAChecklistValidation',
   SAMPLING: 'OSGStatisticalSignificanceCalculator',
   AUDIT: 'AuditAgent',
 };
