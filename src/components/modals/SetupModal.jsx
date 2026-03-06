@@ -1,17 +1,18 @@
 import { useState, useCallback } from 'react';
-import { REQUIRED_COLLECTIONS } from '../../constants/config';
+import { REQUIRED_COLLECTIONS, SUGGESTED_COLLECTIONS } from '../../constants/config';
 import { createClientFolders } from '../../services/collections';
 import { useCollections } from '../../context/CollectionContext';
 
 /**
  * New Client Setup modal.
  * Creates folder structure for a new client project.
+ * Auto-includes SUGGESTED_COLLECTIONS (e.g. "Client Data") as removable defaults.
  */
 export default function SetupModal({ isOpen, onClose }) {
   const { loadCollections } = useCollections();
   const [clientName, setClientName] = useState('');
   const [projectName, setProjectName] = useState('');
-  const [dynamicTypes, setDynamicTypes] = useState([]);
+  const [dynamicTypes, setDynamicTypes] = useState([...SUGGESTED_COLLECTIONS]);
   const [customInput, setCustomInput] = useState('');
   const [error, setError] = useState('');
   const [isCreating, setIsCreating] = useState(false);
@@ -19,9 +20,10 @@ export default function SetupModal({ isOpen, onClose }) {
   const addCustomType = useCallback(() => {
     const val = customInput.trim();
     if (!val) return;
+    if (dynamicTypes.includes(val)) return; // no duplicates
     setDynamicTypes(prev => [...prev, val]);
     setCustomInput('');
-  }, [customInput]);
+  }, [customInput, dynamicTypes]);
 
   const removeType = useCallback((idx) => {
     setDynamicTypes(prev => prev.filter((_, i) => i !== idx));
@@ -41,7 +43,7 @@ export default function SetupModal({ isOpen, onClose }) {
       // Reset and close
       setClientName('');
       setProjectName('');
-      setDynamicTypes([]);
+      setDynamicTypes([...SUGGESTED_COLLECTIONS]);
       onClose();
     } catch (e) {
       setError(e.message);
@@ -53,7 +55,7 @@ export default function SetupModal({ isOpen, onClose }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" style={{ width: 480 }} onClick={(e) => e.stopPropagation()}>
+      <div className="modal" style={{ width: 480, maxHeight: '85vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
         <h2>New Client Setup</h2>
         <p>Create folder structure for a new client</p>
 
@@ -63,14 +65,14 @@ export default function SetupModal({ isOpen, onClose }) {
         <label className="input-label">Project Name</label>
         <input type="text" value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder="e.g. Mortgage Servicing Transfer" />
 
-        {/* Dynamic reference folders */}
+        {/* Dynamic reference folders — fixed height, scrollable */}
         <label className="input-label" style={{ marginBottom: 2 }}>Reference Folders</label>
         <div style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 8 }}>
           Source materials — upload client data, fee schedules, templates, and disclosures here
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 120, overflowY: 'auto' }}>
+        <div style={{ maxHeight: 140, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
           {dynamicTypes.map((t, i) => (
-            <div key={i} className="type-check checked" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', fontSize: 13 }}>
+            <div key={i} className="type-check checked" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', fontSize: 13, flexShrink: 0 }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2">
                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
               </svg>
