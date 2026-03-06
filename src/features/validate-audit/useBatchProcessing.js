@@ -3,6 +3,7 @@ import { AGENTS, CHUNKER_URL, AUDIT_TOTAL_STEPS } from '../../constants/config';
 import { apiCall } from '../../services/api';
 import { runAgent } from '../../services/agents';
 import { sleep } from '../../utils/sleep';
+import { getCollectionGroups } from '../../hooks/useCollectionGroups';
 
 const CYCLING_TEXTS = [
   'Reading after sample documents...', 'Cross-referencing client data spreadsheet...',
@@ -19,7 +20,7 @@ const CYCLING_TEXTS = [
  * Hook managing the full batch processing lifecycle:
  * file upload → chunking → agent launch → execution tracking → completion.
  */
-export function useBatchProcessing({ jwt, onComplete, onError }) {
+export function useBatchProcessing({ jwt, allCollections, onComplete, onError }) {
   const [state, setState] = useState('idle'); // idle | chunking | launching | tracking | error
   const [batchFile, setBatchFile] = useState(null);
   const [batchFileName, setBatchFileName] = useState('');
@@ -151,6 +152,28 @@ export function useBatchProcessing({ jwt, onComplete, onError }) {
             chunkPollRef.current = null;
             batchManifest.current = d.manifest;
             if (d.manifest.documentIds?.length > 0) {
+              // Add batch documents to After Samples collection for browse/compare
+              try {
+                const clientKey = clientName.toLowerCase().split(' - ')[0].split(':')[0].trim();
+                const groups = getCollectionGroups(allCollections || []);
+                const normalizedKey = clientName.toUpperCase();
+                const group = groups[normalizedKey];
+                if (group) {
+                  const afterSamplesCol = group.collections.find(c =>
+                    (c.typeName || c.name || '').toLowerCase().includes('after sample')
+                  );
+                  if (afterSamplesCol) {
+                    const docIds = d.manifest.documentIds.map(b => b.documentId);
+                    await apiCall('/collections/' + afterSamplesCol.id + '/members', {
+                      method: 'POST',
+                      body: JSON.stringify({ action: 'add', members: docIds }),
+                    });
+                    console.log('Added ' + docIds.length + ' batch docs to After Samples collection');
+                  }
+                }
+              } catch (colErr) {
+                console.log('Could not add to After Samples collection (non-fatal):', colErr.message);
+              }
               launchAgents(clientName, checklistDocId);
             } else {
               throw new Error('No document IDs returned from chunker');
@@ -171,7 +194,7 @@ export function useBatchProcessing({ jwt, onComplete, onError }) {
       setState('error');
       if (onError) onError(e.message);
     }
-  }, [batchFile, jwt, onError]);
+  }, [batchFile, jwt, allCollections, onError]);
 
   /**
    * Launch validation agents for each batch.
