@@ -1,13 +1,12 @@
 // ===== API =====
 export const API_BASE = 'https://api.vertesia.io/api/v1';
 export const STS_BASE = 'https://api.vertesia.io';
-export const ENVIRONMENT_ID = '681915c6a01fb262a410c161';
-export const CHUNKER_URL = 'https://osgpdfchunkerpoc-production.up.railway.app';
+export const ENVIRONMENT_ID = import.meta.env.VITE_ENVIRONMENT_ID || '';
+export const CHUNKER_URL = import.meta.env.VITE_CHUNKER_URL || 'https://osgpdfchunkerpoc-production.up.railway.app';
 
 // ===== Auth =====
-// Note: API_KEY is hardcoded for demo. In production, accept via login form or env var.
-export const API_KEY = 'sk-25bf067b64952c430f0b786b52bf89f8';
-export const VALID_CODES = ['DemoUser1234', 'DemoUser5678', 'DemoUser9012', 'DemoUser3456'];
+export const API_KEY = import.meta.env.VITE_API_KEY || '';
+export const VALID_CODES = (import.meta.env.VITE_VALID_CODES || '').split(',').filter(Boolean);
 
 // ===== Agents =====
 export const AGENTS = {
@@ -16,7 +15,7 @@ export const AGENTS = {
   SAMPLING: 'OSGStatisticalSignificanceCalculator',
   AUDIT: 'AuditAgent',
 };
-export const MODEL = 'publishers/anthropic/models/claude-opus-4-5';
+export const MODEL = 'arn:aws:bedrock:us-east-1:716085231028:inference-profile/global.anthropic.claude-sonnet-4-6';
 
 // ===== Collection Setup =====
 export const REQUIRED_COLLECTIONS = [
